@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\TaskStatus;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class UpdateTaskStatusRequest extends FormRequest
 {
@@ -12,7 +14,7 @@ class UpdateTaskStatusRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return $this->user()?->can('update', $this->route('task')) ?? false;
     }
 
     /**
@@ -23,7 +25,7 @@ class UpdateTaskStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'status' => ['required', new Enum(TaskStatus::class)],
         ];
     }
 }

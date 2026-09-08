@@ -2,8 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Task;
+use App\TaskPriority;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class StoreTaskRequest extends FormRequest
 {
@@ -12,7 +15,7 @@ class StoreTaskRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return $this->user()?->can('create', Task::class) ?? false;
     }
 
     /**
@@ -23,7 +26,11 @@ class StoreTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:5000'],
+            'due_date' => ['nullable', 'date'],
+            'priority' => ['required', new Enum(TaskPriority::class)],
+            'assignee_id' => ['nullable', 'integer', 'exists:users,id'],
         ];
     }
 }

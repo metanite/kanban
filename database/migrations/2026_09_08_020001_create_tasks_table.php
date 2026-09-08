@@ -13,7 +13,17 @@ return new class extends Migration
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('owner_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('assignee_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->string('title');
+            $table->text('description')->nullable();
+            $table->date('due_date')->nullable();
+            $table->string('priority');
+            $table->string('status');
             $table->timestamps();
+
+            $table->index(['owner_id', 'status', 'updated_at', 'id']);
+            $table->index(['assignee_id', 'status', 'updated_at', 'id']);
         });
     }
 
