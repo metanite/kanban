@@ -53,7 +53,7 @@ export default function Login({ status, canResetPassword }: Props) {
                                     {canResetPassword && (
                                         <TextLink
                                             href={request()}
-                                            className="ml-auto text-sm"
+                                            className="ml-auto text-sm text-[#39704f] hover:text-[#1f5138] dark:text-[#a7d5b3] dark:hover:text-[#d4efd8]"
                                             tabIndex={5}
                                         >
                                             Forgot your password?
@@ -82,7 +82,7 @@ export default function Login({ status, canResetPassword }: Props) {
 
                             <Button
                                 type="submit"
-                                className="mt-4 w-full"
+                                className="mt-4 w-full bg-[#1f5138] text-white hover:bg-[#16402b] dark:bg-[#8fcea8] dark:text-[#12251a] dark:hover:bg-[#a7d5b3]"
                                 tabIndex={4}
                                 disabled={processing}
                                 data-test="login-button"
@@ -94,7 +94,11 @@ export default function Login({ status, canResetPassword }: Props) {
 
                         <div className="text-muted-foreground text-center text-sm">
                             Don't have an account?{' '}
-                            <TextLink href={register()} tabIndex={5}>
+                            <TextLink
+                                href={register()}
+                                className="text-[#39704f] hover:text-[#1f5138] dark:text-[#a7d5b3] dark:hover:text-[#d4efd8]"
+                                tabIndex={5}
+                            >
                                 Sign up
                             </TextLink>
                         </div>

@@ -123,17 +123,18 @@ export function KanbanBoard({
     }
 
     return (
-        <div className="flex h-full min-h-0 flex-1 flex-col gap-4 p-4">
+        <div className="flex h-full min-h-0 flex-1 flex-col gap-4 bg-[#f4f6f1] p-4 text-[#17211b] dark:bg-[#101411] dark:text-[#edf4ed]">
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                     <h1 className="text-2xl font-semibold tracking-tight">
                         My board
                     </h1>
-                    <p className="text-muted-foreground text-sm">
+                    <p className="text-sm text-[#607064] dark:text-[#b7c5b8]">
                         Tasks you own or that are assigned to you.
                     </p>
                 </div>
                 <Button
+                    className="bg-[#1f5138] text-white hover:bg-[#16402b] dark:bg-[#8fcea8] dark:text-[#12251a] dark:hover:bg-[#a7d5b3]"
                     onClick={() => {
                         clearErrors();
                         setIsCreateDialogOpen(true);
@@ -268,13 +269,13 @@ function KanbanColumn({
 }) {
     return (
         <section
-            className="bg-muted/40 flex min-h-72 min-w-0 flex-col rounded-xl border"
+            className="flex min-h-72 min-w-0 flex-col rounded-xl border border-[#cbd8cc] bg-[#e9efe8] dark:border-[#34483a] dark:bg-[#172119]"
             onDragOver={(event) => event.preventDefault()}
             onDrop={() => onDrop(status)}
         >
             <div className="flex items-center justify-between gap-2 px-4 py-3">
                 <h2 className="font-semibold">{title}</h2>
-                <span className="bg-background text-muted-foreground rounded-full px-2 py-0.5 text-xs">
+                <span className="rounded-full bg-[#fbfcfa] px-2 py-0.5 text-xs text-[#607064] dark:bg-[#253329] dark:text-[#b7c5b8]">
                     {tasks.length}
                 </span>
             </div>
@@ -285,7 +286,7 @@ function KanbanColumn({
                 loading={<TaskSkeleton />}
             >
                 {tasks.length === 0 ? (
-                    <div className="text-muted-foreground rounded-lg border border-dashed px-3 py-8 text-center text-sm">
+                    <div className="rounded-lg border border-dashed border-[#b8c9ba] px-3 py-8 text-center text-sm text-[#7b8b7e] dark:border-[#4c6752] dark:text-[#9caf9e]">
                         Drop a task here
                     </div>
                 ) : (
@@ -315,7 +316,7 @@ function TaskCard({
     return (
         <article
             draggable
-            className="bg-card text-card-foreground cursor-grab rounded-lg border p-3 shadow-sm active:cursor-grabbing"
+            className="cursor-grab rounded-lg border border-[#d9e2d8] bg-[#fbfcfa] p-3 text-[#17211b] shadow-sm active:cursor-grabbing dark:border-[#34483a] dark:bg-[#253329] dark:text-[#edf4ed]"
             onDragEnd={() => onDragStart(null)}
             onDragStart={(event) => {
                 event.dataTransfer.effectAllowed = 'move';
@@ -323,11 +324,11 @@ function TaskCard({
             }}
         >
             <div className="flex items-start gap-2">
-                <GripVertical className="text-muted-foreground mt-0.5 size-4 shrink-0" />
+                <GripVertical className="mt-0.5 size-4 shrink-0 text-[#7b8b7e] dark:text-[#9caf9e]" />
                 <div className="min-w-0 flex-1 space-y-2">
                     <p className="font-medium break-words">{task.title}</p>
                     {task.description !== null && (
-                        <p className="text-muted-foreground line-clamp-2 text-sm break-words">
+                        <p className="line-clamp-2 text-sm break-words text-[#607064] dark:text-[#b7c5b8]">
                             {task.description}
                         </p>
                     )}
@@ -341,7 +342,7 @@ function TaskCard({
                             {task.priority}
                         </span>
                         {task.due_date !== null && (
-                            <span className="text-muted-foreground inline-flex items-center gap-1">
+                            <span className="inline-flex items-center gap-1 text-[#607064] dark:text-[#b7c5b8]">
                                 <CalendarDays className="size-3" />
                                 {new Intl.DateTimeFormat(undefined, {
                                     month: 'short',
@@ -352,7 +353,7 @@ function TaskCard({
                             </span>
                         )}
                         {task.assignee !== null && (
-                            <span className="text-muted-foreground inline-flex items-center gap-1">
+                            <span className="inline-flex items-center gap-1 text-[#607064] dark:text-[#b7c5b8]">
                                 <UserRound className="size-3" />
                                 {task.assignee.name}
                             </span>
@@ -366,7 +367,7 @@ function TaskCard({
                     </label>
                     <select
                         id={`task-status-${task.id}`}
-                        className="border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 h-8 w-full rounded-md border px-2 text-xs outline-none focus-visible:ring-[3px]"
+                        className="h-8 w-full rounded-md border border-[#cbd8cc] bg-[#f4f6f1] px-2 text-xs outline-none focus-visible:border-[#39704f] focus-visible:ring-2 focus-visible:ring-[#39704f]/30 dark:border-[#405746] dark:bg-[#1d2a20] dark:focus-visible:border-[#a7d5b3] dark:focus-visible:ring-[#a7d5b3]/30"
                         value={task.status}
                         onChange={(event) =>
                             onMove(task.id, event.target.value as TaskStatus)
@@ -408,8 +409,8 @@ function FormField({
 function TaskSkeleton() {
     return (
         <div className="space-y-2 pt-3">
-            <Skeleton className="h-24 w-full" />
-            <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-24 w-full bg-[#dce8dd] dark:bg-[#2b4030]" />
+            <Skeleton className="h-20 w-full bg-[#dce8dd] dark:bg-[#2b4030]" />
         </div>
     );
 }
