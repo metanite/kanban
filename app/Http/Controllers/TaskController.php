@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Tasks\CreateTask;
+use App\Actions\Tasks\DeleteTask;
+use App\Actions\Tasks\UpdateTaskStatus;
 use App\Http\Requests\DestroyTaskRequest;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskStatusRequest;
@@ -15,13 +18,9 @@ class TaskController extends Controller
     /**
      * Store a new task in the To-do column.
      */
-    public function store(StoreTaskRequest $request): RedirectResponse
+    public function store(StoreTaskRequest $request, CreateTask $createTask): RedirectResponse
     {
-        Task::create([
-            ...$request->validated(),
-            'owner_id' => $request->user()->id,
-            'status' => TaskStatus::ToDo,
-        ]);
+        $createTask->handle($request->user(), $request->validated());
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Task added.')]);
 
@@ -31,9 +30,15 @@ class TaskController extends Controller
     /**
      * Move a task to another board column.
      */
-    public function updateStatus(UpdateTaskStatusRequest $request, Task $task): RedirectResponse
-    {
-        $task->update($request->validated());
+    public function updateStatus(
+        UpdateTaskStatusRequest $request,
+        Task $task,
+        UpdateTaskStatus $updateTaskStatus,
+    ): RedirectResponse {
+        $updateTaskStatus->handle(
+            $task,
+            TaskStatus::from($request->validated()['status']),
+        );
 
         return to_route('dashboard');
     }
@@ -41,9 +46,12 @@ class TaskController extends Controller
     /**
      * Remove a task from the board.
      */
-    public function destroy(DestroyTaskRequest $request, Task $task): RedirectResponse
-    {
-        $task->delete();
+    public function destroy(
+        DestroyTaskRequest $request,
+        Task $task,
+        DeleteTask $deleteTask,
+    ): RedirectResponse {
+        $deleteTask->handle($task);
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Task removed.')]);
 

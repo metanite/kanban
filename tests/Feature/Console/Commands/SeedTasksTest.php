@@ -14,7 +14,7 @@ class SeedTasksTest extends TestCase
 
     public function test_it_creates_the_requested_number_of_tasks_with_the_requested_status(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['id' => 2]);
 
         $this->artisan('tasks:seed', [
             'count' => 3,
