@@ -1,19 +1,28 @@
 import { InfiniteScroll, router, useForm } from '@inertiajs/react';
-import { CalendarDays, GripVertical, Plus, UserRound } from 'lucide-react';
+import {
+    CalendarDays,
+    GripVertical,
+    Plus,
+    Trash2,
+    UserRound,
+} from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import {
     store,
+    destroy,
     updateStatus,
 } from '@/actions/App/Http/Controllers/TaskController';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
+    DialogClose,
     DialogContent,
     DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
+    DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -32,6 +41,7 @@ type Task = {
     due_date: string | null;
     priority: TaskPriority;
     status: TaskStatus;
+    can_delete: boolean;
     assignee: Assignee | null;
 };
 
@@ -313,6 +323,20 @@ function TaskCard({
     onDragStart: (taskId: number | null) => void;
     onMove: (taskId: number, status: TaskStatus) => void;
 }) {
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    function deleteTask(): void {
+        setIsDeleting(true);
+
+        router.delete(destroy.url(task.id), {
+            preserveScroll: true,
+            onError: () => toast.error('Unable to remove this task.'),
+            onSuccess: () => setIsDeleteDialogOpen(false),
+            onFinish: () => setIsDeleting(false),
+        });
+    }
+
     return (
         <article
             draggable
@@ -381,6 +405,56 @@ function TaskCard({
                         ))}
                     </select>
                 </div>
+                {task.can_delete && (
+                    <Dialog
+                        open={isDeleteDialogOpen}
+                        onOpenChange={setIsDeleteDialogOpen}
+                    >
+                        <DialogTrigger asChild>
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="size-8 shrink-0 text-[#7b8b7e] hover:bg-rose-500/10 hover:text-rose-600 dark:text-[#9caf9e] dark:hover:text-rose-300"
+                                title="Remove task"
+                                aria-label={`Remove ${task.title}`}
+                                onPointerDown={(event) =>
+                                    event.stopPropagation()
+                                }
+                            >
+                                <Trash2 />
+                                <span className="sr-only">Remove task</span>
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Remove task?</DialogTitle>
+                                <DialogDescription>
+                                    This will permanently remove &quot;
+                                    {task.title}&quot; from your board.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <DialogFooter>
+                                <DialogClose asChild>
+                                    <Button
+                                        variant="secondary"
+                                        disabled={isDeleting}
+                                    >
+                                        Cancel
+                                    </Button>
+                                </DialogClose>
+                                <Button
+                                    variant="destructive"
+                                    onClick={deleteTask}
+                                    disabled={isDeleting}
+                                >
+                                    <Trash2 />
+                                    {isDeleting ? 'Removing...' : 'Remove task'}
+                                </Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+                )}
             </div>
         </article>
     );

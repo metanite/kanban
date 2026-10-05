@@ -47,6 +47,7 @@ class DashboardController extends Controller
                 'due_date' => $task->due_date?->toDateString(),
                 'priority' => $task->priority->value,
                 'status' => $task->status->value,
+                'can_delete' => $user->can('delete', $task),
                 'assignee' => $task->assignee === null ? null : [
                     'id' => $task->assignee->id,
                     'name' => $task->assignee->name,

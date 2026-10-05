@@ -141,6 +141,35 @@ class TaskBoardTest extends TestCase
         $this->assertSame(TaskStatus::ToDo, $task->refresh()->status);
     }
 
+    public function test_owner_can_remove_a_task(): void
+    {
+        $owner = User::factory()->create();
+        $task = Task::factory()->for($owner, 'owner')->create();
+
+        $response = $this->actingAs($owner)->delete(route('tasks.destroy', $task));
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('dashboard'));
+
+        $this->assertDatabaseMissing('tasks', ['id' => $task->id]);
+    }
+
+    public function test_assignee_cannot_remove_a_task(): void
+    {
+        $owner = User::factory()->create();
+        $assignee = User::factory()->create();
+        $task = Task::factory()
+            ->for($owner, 'owner')
+            ->for($assignee, 'assignee')
+            ->create();
+
+        $response = $this->actingAs($assignee)->delete(route('tasks.destroy', $task));
+
+        $response->assertForbidden();
+        $this->assertDatabaseHas('tasks', ['id' => $task->id]);
+    }
+
     public function test_each_column_uses_its_own_paginator(): void
     {
         $user = User::factory()->create();
