@@ -20,10 +20,12 @@ import type { Task, TaskStatus } from './types';
 
 export function TaskCard({
     task,
+    isDragging,
     onDragStart,
     onMove,
 }: {
     task: Task;
+    isDragging: boolean;
     onDragStart: (taskId: number | null) => void;
     onMove: (taskId: number, status: TaskStatus) => void;
 }) {
@@ -43,16 +45,47 @@ export function TaskCard({
 
     return (
         <article
-            draggable
-            className="cursor-grab rounded-lg border border-[#d9e2d8] bg-[#fbfcfa] p-3 text-[#17211b] shadow-sm active:cursor-grabbing dark:border-[#34483a] dark:bg-[#253329] dark:text-[#edf4ed]"
-            onDragEnd={() => onDragStart(null)}
-            onDragStart={(event) => {
-                event.dataTransfer.effectAllowed = 'move';
-                onDragStart(task.id);
-            }}
+            id={`task-${task.id}`}
+            data-task-id={task.id}
+            className={cn(
+                'rounded-lg border border-[#d9e2d8] bg-[#fbfcfa] p-3 text-[#17211b] shadow-sm dark:border-[#34483a] dark:bg-[#253329] dark:text-[#edf4ed]',
+                isDragging && 'opacity-50 ring-2 ring-[#39704f]/30',
+            )}
         >
             <div className="flex items-start gap-2">
-                <GripVertical className="mt-0.5 size-4 shrink-0 text-[#7b8b7e] dark:text-[#9caf9e]" />
+                <button
+                    type="button"
+                    draggable
+                    className="mt-0.5 shrink-0 cursor-grab rounded text-[#7b8b7e] outline-none focus-visible:ring-2 focus-visible:ring-[#39704f]/30 active:cursor-grabbing dark:text-[#9caf9e] dark:focus-visible:ring-[#a7d5b3]/30"
+                    title={`Drag ${task.title}`}
+                    aria-label={`Drag ${task.title}`}
+                    onDragEnd={() => onDragStart(null)}
+                    onDragStart={(event) => {
+                        const taskCard =
+                            event.currentTarget.closest<HTMLElement>(
+                                '[data-task-id]',
+                            );
+                        const taskId = taskCard?.dataset.taskId;
+
+                        if (taskId === undefined) {
+                            event.preventDefault();
+                            return;
+                        }
+
+                        event.dataTransfer.effectAllowed = 'move';
+                        event.dataTransfer.setData('text/plain', taskId);
+
+                        if (taskCard !== null) {
+                            event.dataTransfer.setDragImage(taskCard, 24, 24);
+                        }
+
+                        onDragStart(Number(taskId));
+                    }}
+                    onPointerDown={(event) => event.stopPropagation()}
+                >
+                    <GripVertical className="size-4" />
+                    <span className="sr-only">Drag task</span>
+                </button>
                 <div className="min-w-0 flex-1 space-y-2">
                     <p className="font-medium break-words">{task.title}</p>
                     {task.description !== null && (

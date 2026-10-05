@@ -8,6 +8,7 @@ export function KanbanColumn({
     tasks,
     propName,
     status,
+    draggedTaskId,
     onDrop,
     onDragStart,
     onMove,
@@ -16,6 +17,7 @@ export function KanbanColumn({
     tasks: Task[];
     propName: ColumnKey;
     status: TaskStatus;
+    draggedTaskId: number | null;
     onDrop: (status: TaskStatus) => void;
     onDragStart: (taskId: number | null) => void;
     onMove: (taskId: number, status: TaskStatus) => void;
@@ -48,6 +50,7 @@ export function KanbanColumn({
                             <TaskCard
                                 key={task.id}
                                 task={task}
+                                isDragging={draggedTaskId === task.id}
                                 onDragStart={onDragStart}
                                 onMove={onMove}
                             />

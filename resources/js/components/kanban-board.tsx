@@ -74,6 +74,7 @@ export function KanbanBoard({
                         tasks={taskColumns[column.key].data}
                         propName={column.key}
                         status={column.status}
+                        draggedTaskId={draggedTaskId}
                         onDrop={handleDrop}
                         onDragStart={setDraggedTaskId}
                         onMove={moveTask}
